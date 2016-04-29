@@ -13,6 +13,7 @@
 namespace PMG\Queue\Driver;
 
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 
 /**
@@ -92,7 +93,7 @@ class HappyPheanstalkDriverTest extends \PHPUnit_Framework_TestCase
         $host = getenv('PMG_QUEUE_HOST') ?: 'localhost';
         $port = intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
         $this->conn = new \Pheanstalk\Pheanstalk($host, $port);
-        $this->driver = new PheanstalkDriver($this->conn, [
+        $this->driver = new PheanstalkDriver($this->conn, new NativeSerializer('supersecret'), [
             'reserve-timeout'   => 1,
         ]);
 

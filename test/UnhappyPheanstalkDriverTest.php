@@ -15,6 +15,7 @@ namespace PMG\Queue\Driver;
 use Pheanstalk\Job;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 
 /**
@@ -92,7 +93,7 @@ class UnhappyPheanstalkDriverTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->conn = new \Pheanstalk\Pheanstalk('localhost', 65000);
-        $this->driver = new PheanstalkDriver($this->conn);
+        $this->driver = new PheanstalkDriver($this->conn, new NativeSerializer('supersecret'));
         $this->env = new PheanstalkEnvelope(
             new Job(123, 't'),
             new DefaultEnvelope(new SimpleMessage('t'))

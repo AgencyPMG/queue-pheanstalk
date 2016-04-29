@@ -42,7 +42,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     private $options;
 
-    public function __construct(PheanstalkInterface $conn, array $options=null, Serializer $serializer=null)
+    public function __construct(PheanstalkInterface $conn, Serializer $serializer, array $options=null)
     {
         parent::__construct($serializer);
         $this->conn = $conn;
