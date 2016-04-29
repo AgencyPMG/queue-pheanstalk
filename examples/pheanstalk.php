@@ -18,10 +18,7 @@ if (PHP_VERSION_ID >= 70000) {
         Queue\SimpleMessage::class,
     ], Queue\Driver\PheanstalkDriver::allowedClasses());
 }
-$serializer = new Queue\Serializer\SigningSerializer(
-    new Queue\Serializer\NativeSerializer($allowedClasses),
-    "sshhhh, it's a secret"
-);
+$serializer = new Queue\Serializer\NativeSerializer('SuperSecretKey', $allowedClasses);
 $driver = new Queue\Driver\PheanstalkDriver($conn, [], $serializer);
 
 $router = new Queue\Router\MappingRouter([
