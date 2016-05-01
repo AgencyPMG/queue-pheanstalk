@@ -25,12 +25,9 @@ use PMG\Queue\Serializer\SigningSerializer;
 
 // ...
 
-$serilizer = new SigningSerializer(
-    new NativeSerializer(),
-    'this is the secret key'
-);
+$serilizer = new NativeSerializer('this is the secret key');
 
-$driver = new PheanstalkDriver(new \Pheanstalk('localhost'), [
+$driver = new PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'), $serializer, [
     // how long easy message has to execute in seconds
     'ttr'               => 100,
 
@@ -57,7 +54,7 @@ $driver = new PheanstalkDriver(new \Pheanstalk('localhost'), [
     // A call to `dequeue` blocks for this number of seconds. A zero or
     // falsy value will block until a job becomes available
     'reserve-timeout'   => 10,
-], $serializer);
+]);
 
 // $executor instanceof PMG\Queue\MessageExecutor
 $consumer = new DefaultConsumer($driver, $executor);
