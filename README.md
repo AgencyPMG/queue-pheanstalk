@@ -56,6 +56,6 @@ $driver = new PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'), $seriali
     'reserve-timeout'   => 10,
 ]);
 
-// $executor instanceof PMG\Queue\MessageExecutor
-$consumer = new DefaultConsumer($driver, $executor);
+// $handler instanceof PMG\Queue\MessageHandler
+$consumer = new DefaultConsumer($driver, $handler);
 ```

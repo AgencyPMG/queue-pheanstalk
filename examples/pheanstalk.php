@@ -27,23 +27,20 @@ $router = new Queue\Router\MappingRouter([
     'MustStop'      => $queueName,
 ]);
 
-$resolver = new Queue\Resolver\MappingResolver([
-    'TestMessage'   => function () {
-        // noop
-    },
-    'TestMessage2'  => function () {
-        throw new \Exception('oops');
-    },
-    'MustStop'      => function () {
-        throw new Queue\Exception\SimpleMustStop('stopit');
-    },
-]);
+$handler = new Queue\Handler\CallableHandler(function (Queue\Message $msg) {
+    $name = $msg->getName();
+    if ('MustStop' === $name) {
+        throw new Queue\Exception\SimpleMustStop();
+    }
+
+    echo $name, PHP_EOL;
+});
 
 $producer = new Queue\DefaultProducer($driver, $router);
 
 $consumer = new Queue\DefaultConsumer(
     $driver,
-    new Queue\Executor\SimpleExecutor($resolver),
+    $handler,
     new Queue\Retry\NeverSpec(),
     new StreamLogger()
 );
