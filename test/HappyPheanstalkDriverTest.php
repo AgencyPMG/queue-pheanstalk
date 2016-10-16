@@ -15,13 +15,14 @@ namespace PMG\Queue\Driver;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
+use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
 
 /**
  * Tests all the "happy" paths of the pheanstalk driver: no exceptions
  */
 class HappyPheanstalkDriverTest extends PheanstalkTestCase
 {
-    private $conn, $driver, $seenTubes = [];
+    private $conn, $serializer, $driver, $seenTubes = [];
 
     public function testDequeueReturnsNullWhenNoJobsAreFound()
     {
@@ -88,10 +89,33 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->assertEquals('buried', $res['state']);
     }
 
+    public function testFailWithADeleteFailureStrategyRemovesTheJob()
+    {
+        $driver = new PheanstalkDriver($this->conn, $this->serializer, [
+            'reserve-timeout' => 1,
+        ], new Pheanstalk\DeleteFailureStrategy());
+        $tube = $this->randomTube();
+
+        $env = $driver->enqueue($tube, new SimpleMessage('TestMessage'));
+        $this->assertEnvelope($env);
+
+        $env2 = $driver->dequeue($tube);
+        $this->assertEnvelope($env2);
+
+        $this->assertEquals($env->getJobId(), $env2->getJobId());
+
+        $driver->fail($tube, $env2);
+
+        $this->expectException(\Pheanstalk\Exception::class);
+        $this->expectExceptionMessage('NOT_FOUND');
+        $this->conn->statsJob($env2->getJob());
+    }
+
     protected function setUp()
     {
         $this->conn = self::createConnection();
-        $this->driver = new PheanstalkDriver($this->conn, new NativeSerializer('supersecret'), [
+        $this->serializer = new NativeSerializer('supersecret');
+        $this->driver = new PheanstalkDriver($this->conn, $this->serializer, [
             'reserve-timeout'   => 1,
         ]);
 
