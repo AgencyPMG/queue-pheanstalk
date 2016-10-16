@@ -19,6 +19,7 @@ use PMG\Queue\Envelope;
 use PMG\Queue\Message;
 use PMG\Queue\Exception\InvalidEnvelope;
 use PMG\Queue\Serializer\Serializer;
+use PMG\Queue\Driver\Pheanstalk\FailureStrategy;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
 
@@ -42,7 +43,12 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     private $options;
 
-    public function __construct(PheanstalkInterface $conn, Serializer $serializer, array $options=null)
+    /**
+     * @var FailureStrategy
+     */
+    private $failure;
+
+    public function __construct(PheanstalkInterface $conn, Serializer $serializer, array $options=null, FailureStrategy $failure=null)
     {
         parent::__construct($serializer);
         $this->conn = $conn;
@@ -56,6 +62,9 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
             'reserve-timeout'   => 10,
         ], $options ?: []);
+        $this->failure = null === $failure ? new Pheanstalk\BuryFailureStrategy(
+            $this->options['fail-priority']
+        ) : $failure;
     }
 
     /**
@@ -152,10 +161,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     public function fail($queueName, Envelope $env)
     {
         try {
-            $this->conn->bury(
-                $this->assurePheanstalkEnvelope($env)->getJob(),
-                $this->options['fail-priority']
-            );
+            $this->failure->fail($this->conn, $this->assurePheanstalkEnvelope($env));
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
