@@ -19,7 +19,7 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 /**
  * Tests all the "happy" paths of the pheanstalk driver: no exceptions
  */
-class HappyPheanstalkDriverTest extends \PHPUnit_Framework_TestCase
+class HappyPheanstalkDriverTest extends PheanstalkTestCase
 {
     private $conn, $driver, $seenTubes = [];
 
@@ -90,9 +90,7 @@ class HappyPheanstalkDriverTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $host = getenv('PMG_QUEUE_HOST') ?: 'localhost';
-        $port = intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
-        $this->conn = new \Pheanstalk\Pheanstalk($host, $port);
+        $this->conn = self::createConnection();
         $this->driver = new PheanstalkDriver($this->conn, new NativeSerializer('supersecret'), [
             'reserve-timeout'   => 1,
         ]);
