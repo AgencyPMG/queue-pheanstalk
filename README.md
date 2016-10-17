@@ -59,3 +59,37 @@ $driver = new PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'), $seriali
 // $handler instanceof PMG\Queue\MessageHandler
 $consumer = new DefaultConsumer($driver, $handler);
 ```
+
+## Dealing with Failed Messages
+
+By default, `PheanstalkDriver` will [bury](https://github.com/kr/beanstalkd/blob/b7b4a6a14b7e8d096dc8cbc255b23be17a228cbb/doc/protocol.txt#L291-L293)
+any message passed to `PheanstalkDriver::fail`. This is, generally, a good thing
+if there are no other accountability measures around your queue system.
+
+That said, `pmg/queue` does nothing for you regarding *kicking* jobs back to a
+ready state. If there are other accountability measures around your queue
+implementation and you'd rather just delete failed messages after they've been
+retried, use a different `FailureStrategy`.
+
+```php
+use Pheanstalk\Pheanstalk;
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Driver\PheanstalkDriver;
+use PMG\Queue\Driver\Pheanstalk\DeleteFailureStrategy;
+use PMG\Queue\Serializer\NativeSerializer;
+
+// ...
+
+$serilizer = new NativeSerializer('this is the secret key');
+$failureStrategy = new DeleteFailureStrategy();
+
+$driver = new PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'), $serializer, [
+    // as above
+], $failureStrategy);
+
+// $handler instanceof PMG\Queue\MessageHandler
+$consumer = new DefaultConsumer($driver, $handler);
+```
+
+Feel free to implement `PMG\Queue\Driver\Pheanstalk\FailureStrategy` if a
+different solution is needed.
