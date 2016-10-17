@@ -3,7 +3,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.0.0 (Unreleased)
+## 1.1.0 (Unreleased)
+
+### Changed
+
+n/a
+
+### Fixed
+
+n/a
+
+### Added
+
+- Introduces a new `FailureStrategy` interface as a pluggable way to change how
+  the driver deals with failed message. The default behavior is to `BURY`
+  them, though a `DELETE` strategy is also supplied. Pass a (optiona)
+  `FailureStrategy` instance as the fourth argument of `PheanstalkDriver::__construct`.
+
+## 1.0.0
 
 ### Changed
 

@@ -22,7 +22,7 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
  * Tests all the "unhappy" paths for the pheanstalk driver. This test
  * purposefully tries to cause errors by giving invalid hosts, etc.
  */
-class UnhappyPheanstalkDriverTest extends \PHPUnit_Framework_TestCase
+class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
 {
     private $conn, $driver;
 
