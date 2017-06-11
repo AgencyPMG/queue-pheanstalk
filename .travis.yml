@@ -5,11 +5,7 @@ php:
     - 7.1
 
 notifications:
-    email:
-        recipients:
-            - tech@pmg.com
-    on_success: change
-    on_failure: always
+    email: false
 
 before_install:
     - curl -L https://github.com/kr/beanstalkd/archive/v1.10.tar.gz | tar -xz -C /tmp
