@@ -60,6 +60,8 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             'retry-delay'       => PheanstalkInterface::DEFAULT_DELAY,
             'retry-ttr'         => PheanstalkInterface::DEFAULT_TTR,
             'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
+            'release-priority'  => PheanstalkInterface::DEFAULT_PRIORITY,
+            'release-delay'     => PheanstalkInterface::DEFAULT_DELAY,
             'reserve-timeout'   => 10,
         ], $options ?: []);
         $this->failure = null === $failure ? new Pheanstalk\BuryFailureStrategy(
@@ -81,7 +83,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function enqueue($queueName, Message $message)
+    public function enqueue(string $queueName, Message $message) : Envelope
     {
         $env = new DefaultEnvelope($message);
         $data = $this->serialize($env);
@@ -104,7 +106,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function dequeue($queueName)
+    public function dequeue(string $queueName)
     {
         $job = null;
         try {
@@ -119,7 +121,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function ack($queueName, Envelope $env)
+    public function ack(string $queueName, Envelope $env)
     {
         try {
             $this->conn->delete($this->assurePheanstalkEnvelope($env)->getJob());
@@ -131,7 +133,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function retry($queueName, Envelope $env)
+    public function retry(string $queueName, Envelope $env) : Envelope
     {
         $e = $this->assurePheanstalkEnvelope($env)->retry();
         $data = $this->serialize($e);
@@ -158,10 +160,26 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function fail($queueName, Envelope $env)
+    public function fail(string $queueName, Envelope $env)
     {
         try {
             $this->failure->fail($this->conn, $this->assurePheanstalkEnvelope($env));
+        } catch (\Pheanstalk\Exception $e) {
+            throw PheanstalkError::fromException($e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function release(string $queueName, Envelope $env)
+    {
+        try {
+            $this->conn->release(
+                $this->assurePheanstalkEnvelope($env)->getJob(),
+                $this->options['release-priority'],
+                $this->options['release-delay']
+            );
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }

@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Driver;
 
-abstract class PheanstalkTestCase extends \PHPUnit_Framework_TestCase
+abstract class PheanstalkTestCase extends \PHPUnit\Framework\TestCase
 {
     protected static function createConnection()
     {
