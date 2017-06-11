@@ -111,10 +111,25 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->conn->statsJob($env2->getJob());
     }
 
+    public function testJobsCanBeReleasedAfterBeingReserved()
+    {
+        $tube = $this->randomTube();
+
+        $env = $this->driver->enqueue($tube, new SimpleMessage('TestMessage'));
+
+        $env2 = $this->driver->dequeue($tube);
+
+        $this->driver->release($tube, $env2);
+
+        $res = $this->conn->statsJob($env2->getJob());
+        $this->assertArrayHasKey('state', $res);
+        $this->assertEquals('ready', $res['state']);
+    }
+
     protected function setUp()
     {
         $this->conn = self::createConnection();
-        $this->serializer = new NativeSerializer('supersecret');
+        $this->serializer = NativeSerializer::fromSigningKey('supersecret');
         $this->driver = new PheanstalkDriver($this->conn, $this->serializer, [
             'reserve-timeout'   => 1,
         ]);

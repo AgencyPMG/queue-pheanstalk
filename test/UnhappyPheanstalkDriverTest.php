@@ -90,10 +90,18 @@ class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->driver->fail('q', $this->env);
     }
 
+    /**
+     * @expectedException PMG\Queue\Driver\Pheanstalk\PheanstalkError
+     */
+    public function testReleaseErrorsWhenTheUnerlyingConnectionErrors()
+    {
+        $this->driver->release('q', $this->env);
+    }
+
     protected function setUp()
     {
         $this->conn = new \Pheanstalk\Pheanstalk('localhost', 65000);
-        $this->driver = new PheanstalkDriver($this->conn, new NativeSerializer('supersecret'));
+        $this->driver = new PheanstalkDriver($this->conn, NativeSerializer::fromSigningKey('supersecret'));
         $this->env = new PheanstalkEnvelope(
             new Job(123, 't'),
             new DefaultEnvelope(new SimpleMessage('t'))
