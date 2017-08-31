@@ -7,7 +7,7 @@
     ],
     "require": {
         "php": "~7.0",
-        "pmg/queue": "~4.0@dev",
+        "pmg/queue": "~4.0",
         "pda/pheanstalk": "~3.0"
     },
     "require-dev": {
@@ -20,7 +20,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.x-dev"
+            "dev-master": "2.0-dev",
+            "dev-version-1": "1.0-dev"
         }
     }
 }
