@@ -137,7 +137,11 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         try {
             $this->seenTubes = array_fill_keys($this->conn->listTubes(), true);
         } catch (\Pheanstalk\Exception\ConnectionException $e) {
-            $this->markTestSkipped(sprintf('Beanstalkd server is not running on %s:%d', $host, $port));
+            $this->markTestSkipped(sprintf(
+                'Beanstalkd server is not running on %s:%d',
+                self::getBeanstalkdHost(),
+                self::getBeanstalkdPort()
+            ));
         }
     }
 

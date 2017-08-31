@@ -16,9 +16,19 @@ abstract class PheanstalkTestCase extends \PHPUnit\Framework\TestCase
 {
     protected static function createConnection()
     {
-        $host = getenv('PMG_QUEUE_HOST') ?: 'localhost';
-        $port = intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
+        return  new \Pheanstalk\Pheanstalk(
+            self::getBeanstalkdHost(),
+            self::getBeanstalkdPort()
+        );
+    }
 
-        return  new \Pheanstalk\Pheanstalk($host, $port);
+    protected static function getBeanstalkdHost() : string
+    {
+        return getenv('PMG_QUEUE_HOST') ?: 'localhost';
+    }
+
+    protected static function getBeanstalkdPort() : int
+    {
+        return intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
     }
 }
