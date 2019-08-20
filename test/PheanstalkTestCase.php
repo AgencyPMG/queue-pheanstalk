@@ -12,11 +12,14 @@
 
 namespace PMG\Queue\Driver;
 
+use Pheanstalk\Pheanstalk;
+use Pheanstalk\Contract\PheanstalkInterface;
+
 abstract class PheanstalkTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected static function createConnection()
+    protected static function createConnection() : PheanstalkInterface
     {
-        return  new \Pheanstalk\Pheanstalk(
+        return  Pheanstalk::create(
             self::getBeanstalkdHost(),
             self::getBeanstalkdPort()
         );
@@ -29,6 +32,6 @@ abstract class PheanstalkTestCase extends \PHPUnit\Framework\TestCase
 
     protected static function getBeanstalkdPort() : int
     {
-        return intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
+        return intval(getenv('PMG_QUEUE_PORT') ?: PheanstalkInterface::DEFAULT_PORT);
     }
 }

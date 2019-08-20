@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Driver\Pheanstalk;
 
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 
 /**
  * Used by the Pheanstalk driver to handle message failures in a pluggable way.

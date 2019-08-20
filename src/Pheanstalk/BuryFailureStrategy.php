@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Driver\Pheanstalk;
 
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 
 /**
  * When a message fails, bury it with the priority given to the constructor.

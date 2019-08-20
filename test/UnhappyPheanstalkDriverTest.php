@@ -13,6 +13,7 @@
 namespace PMG\Queue\Driver;
 
 use Pheanstalk\Job;
+use Pheanstalk\Pheanstalk;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Serializer\NativeSerializer;
@@ -100,7 +101,7 @@ class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
 
     protected function setUp()
     {
-        $this->conn = new \Pheanstalk\Pheanstalk('localhost', 65000);
+        $this->conn = Pheanstalk::create('localhost', 65000);
         $this->driver = new PheanstalkDriver($this->conn, NativeSerializer::fromSigningKey('supersecret'));
         $this->env = new PheanstalkEnvelope(
             new Job(123, 't'),

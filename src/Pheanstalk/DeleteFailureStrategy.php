@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Driver\Pheanstalk;
 
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 
 /**
  * When a message fails, delete it. Use this if there are other accoutability
