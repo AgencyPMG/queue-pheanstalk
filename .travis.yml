@@ -1,8 +1,6 @@
 language: php
 
 php:
-    - 7.0
-    - 7.1
     - 7.2
     - 7.3
 
@@ -10,8 +8,8 @@ notifications:
     email: false
 
 before_install:
-    - curl -L https://github.com/kr/beanstalkd/archive/v1.10.tar.gz | tar -xz -C /tmp
-    - cd /tmp/beanstalkd-1.10
+    - curl -L https://github.com/beanstalkd/beanstalkd/archive/v1.11.tar.gz | tar -xz -C /tmp
+    - cd /tmp/beanstalkd-1.11
     - make
     - ./beanstalkd &
     - cd $TRAVIS_BUILD_DIR
