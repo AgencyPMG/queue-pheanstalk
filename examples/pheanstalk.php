@@ -1,11 +1,12 @@
 <?php
 
 use PMG\Queue;
+use Pheanstalk\Pheanstalk;
 
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/StreamLogger.php';
 
-$conn = new \Pheanstalk\Pheanstalk('localhost');
+$conn = Pheanstalk::create('localhost');
 $tubes = $conn->listTubes();
 do {
     $queueName = uniqid('example_');
