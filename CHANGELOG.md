@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.NEXT (Unreleased)
+## 3.NEXT (Unreleased)
 
 ### Changed
 n/a
@@ -13,6 +13,13 @@ n/a
 
 ### Added
 n/a
+
+## 3.0.0
+
+### Changed
+
+- Pheanstalk 4.X is required to use the driver
+- Dropped support for PHP 7.0 and 7.1
 
 ## 1.1.0
 
