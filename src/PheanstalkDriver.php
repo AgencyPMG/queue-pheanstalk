@@ -13,7 +13,7 @@
 namespace PMG\Queue\Driver;
 
 use Pheanstalk\Job;
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Envelope;
 use PMG\Queue\Message;
@@ -89,8 +89,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         $data = $this->serialize($env);
 
         try {
-            $id = $this->conn->putInTube(
-                $queueName,
+            $job = $this->conn->useTube($queueName)->put(
                 $data,
                 $this->options['priority'],
                 $this->options['delay'],
@@ -100,7 +99,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             throw PheanstalkError::fromException($e);
         }
 
-        return new PheanstalkEnvelope(new Job($id, $data), $env);
+        return new PheanstalkEnvelope($job, $env);
     }
 
     /**
@@ -110,7 +109,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     {
         $job = null;
         try {
-            $job = $this->conn->reserveFromTube($queueName, $this->options['reserve-timeout']);
+            $job = $this->conn->watchOnly($queueName)->reserveWithTimeout($this->options['reserve-timeout']);
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
@@ -143,8 +142,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         // a (very real) possiblity of data loss.
         try {
             $this->conn->delete($env->getJob());
-            $id = $this->conn->putInTube(
-                $queueName,
+            $job = $this->conn->useTube($queueName)->put(
                 $data,
                 $this->options['retry-priority'],
                 $this->options['retry-delay'],
@@ -154,7 +152,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             throw PheanstalkError::fromException($e);
         }
 
-        return new PheanstalkEnvelope(new Job($id, $data), $e);
+        return new PheanstalkEnvelope($job, $e);
     }
 
     /**

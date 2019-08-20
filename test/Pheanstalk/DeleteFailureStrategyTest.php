@@ -12,6 +12,8 @@
 
 namespace PMG\Queue\Driver\Pheanstalk;
 
+use Pheanstalk\Job;
+use Pheanstalk\Contract\PheanstalkInterface;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Driver\PheanstalkTestCase;
@@ -21,9 +23,9 @@ class DeleteFailureStrategyTest extends PheanstalkTestCase
     public function testFailDeletesTheGivenPheanstalkJob()
     {
         $s = new DeleteFailureStrategy();
-        $job = new \Pheanstalk\Job(123, 'ignored');
+        $job = new Job(123, 'ignored');
         $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
-        $conn = $this->createMock(\Pheanstalk\PheanstalkInterface::class);
+        $conn = $this->createMock(PheanstalkInterface::class);
         $conn->expects($this->once())
             ->method('delete')
             ->with($job);

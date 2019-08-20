@@ -6,9 +6,9 @@
         { "name": "Christopher Davis", "email": "chris@pmg.com" }
     ],
     "require": {
-        "php": "~7.0",
+        "php": "~7.2",
         "pmg/queue": "~4.0",
-        "pda/pheanstalk": "~3.0"
+        "pda/pheanstalk": "~3.0|~4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0"
