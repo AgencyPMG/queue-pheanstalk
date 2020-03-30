@@ -11,6 +11,7 @@ version of any `pmg/queue` library it will work with `pmg/queue` 5.X.
 
 ### Changed
 
+- PHP 7.3+ is now required.
 - `pmg/queue` 5.X is now required, and the drivers method signatures have
     changed to reflect the `Driver` interface changes in `pmg/queue` 5.X
 - The `retry-delay` option was removed. The `pmg/queue` core now supports
