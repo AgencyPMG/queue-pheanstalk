@@ -45,9 +45,6 @@ $driver = new PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'), $seriali
     // the priority for retried jobs
     'retry-priority'    => 1024,
 
-    // the delay for retried jobs
-    'retry-delay'       => 0,
-
     // When jobs fail, they are "burieds" in beanstalkd with this priority
     'fail-priority'     => 1024,
 

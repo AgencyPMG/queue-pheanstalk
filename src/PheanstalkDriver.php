@@ -57,7 +57,6 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             'delay'             => PheanstalkInterface::DEFAULT_DELAY,
             'ttr'               => PheanstalkInterface::DEFAULT_TTR,
             'retry-priority'    => PheanstalkInterface::DEFAULT_PRIORITY,
-            'retry-delay'       => PheanstalkInterface::DEFAULT_DELAY,
             'retry-ttr'         => PheanstalkInterface::DEFAULT_TTR,
             'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
             'release-priority'  => PheanstalkInterface::DEFAULT_PRIORITY,
@@ -83,7 +82,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function enqueue(string $queueName, Message $message) : Envelope
+    public function enqueue(string $queueName, object $message) : Envelope
     {
         $env = new DefaultEnvelope($message);
         $data = $this->serialize($env);
@@ -105,7 +104,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function dequeue(string $queueName)
+    public function dequeue(string $queueName) : ?Envelope
     {
         $job = null;
         try {
@@ -120,7 +119,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function ack(string $queueName, Envelope $env)
+    public function ack(string $queueName, Envelope $env) : void
     {
         try {
             $this->conn->delete($this->assurePheanstalkEnvelope($env)->getJob());
@@ -134,31 +133,31 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     public function retry(string $queueName, Envelope $env) : Envelope
     {
-        $e = $this->assurePheanstalkEnvelope($env)->retry();
-        $data = $this->serialize($e);
+        $pheanstalkEnv = $this->assurePheanstalkEnvelope($env);
+        $data = $this->serialize($env);
 
         // since we need to update the job payload here, we have to delete
         // it and re-add it manually. This isn't transational, so there's
         // a (very real) possiblity of data loss.
         try {
-            $this->conn->delete($env->getJob());
             $job = $this->conn->useTube($queueName)->put(
                 $data,
                 $this->options['retry-priority'],
-                $this->options['retry-delay'],
+                $pheanstalkEnv->delay(),
                 $this->options['retry-ttr']
             );
+            $this->conn->delete($env->getJob());
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
 
-        return new PheanstalkEnvelope($job, $e);
+        return new PheanstalkEnvelope($job, $env);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fail(string $queueName, Envelope $env)
+    public function fail(string $queueName, Envelope $env) : void
     {
         try {
             $this->failure->fail($this->conn, $this->assurePheanstalkEnvelope($env));
@@ -170,12 +169,15 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
-    public function release(string $queueName, Envelope $env)
+    public function release(string $queueName, Envelope $env) : void
     {
+        $env = $this->assurePheanstalkEnvelope($env);
+
         try {
             $this->conn->release(
-                $this->assurePheanstalkEnvelope($env)->getJob(),
+                $env->getJob(),
                 $this->options['release-priority'],
+                $env->delay(),
                 $this->options['release-delay']
             );
         } catch (\Pheanstalk\Exception $e) {
@@ -183,7 +185,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         }
     }
 
-    private function assurePheanstalkEnvelope(Envelope $env)
+    private function assurePheanstalkEnvelope(Envelope $env) : PheanstalkEnvelope
     {
         if (!$env instanceof PheanstalkEnvelope) {
             throw new InvalidEnvelope(sprintf(

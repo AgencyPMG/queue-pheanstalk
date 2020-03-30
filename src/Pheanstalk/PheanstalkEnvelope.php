@@ -44,7 +44,7 @@ final class PheanstalkEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function unwrap()
+    public function unwrap() : object
     {
         return $this->wrapped->unwrap();
     }
@@ -52,7 +52,7 @@ final class PheanstalkEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function attempts()
+    public function attempts() : int
     {
         return $this->wrapped->attempts();
     }
@@ -61,9 +61,17 @@ final class PheanstalkEnvelope implements Envelope
      * {@inheritdoc}
      * Returns a clone of the wrapped envelope, not itself.
      */
-    public function retry()
+    public function retry(int $delay=0) : Envelope
     {
-        return $this->wrapped->retry();
+        return $this->wrapped->retry($delay);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delay() : int
+    {
+        Return $this->wrapped->delay();
     }
 
     public function getJob()
