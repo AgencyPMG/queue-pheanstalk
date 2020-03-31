@@ -59,11 +59,13 @@ final class PheanstalkEnvelope implements Envelope
 
     /**
      * {@inheritdoc}
-     * Returns a clone of the wrapped envelope, not itself.
      */
     public function retry(int $delay=0) : Envelope
     {
-        return $this->wrapped->retry($delay);
+        $out = clone $this;
+        $out->wrapped = $this->wrapped->retry($delay);
+
+        return $out;
     }
 
     /**
