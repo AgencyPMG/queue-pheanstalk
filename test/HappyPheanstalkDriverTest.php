@@ -12,6 +12,7 @@
 
 namespace PMG\Queue\Driver;
 
+use Pheanstalk\Exception\ServerException;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
@@ -29,12 +30,10 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->assertNull($this->driver->dequeue($this->randomTube()));
     }
 
-    /**
-     * @expectedException Pheanstalk\Exception\ServerException
-     * @expectedExceptionMessage NOT_FOUND
-     */
     public function testJobsCanBeEnqueuedAndDequeuedAndRemovedWithAck()
     {
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('NOT_FOUND');
         $tube = $this->randomTube();
 
         $env = $this->driver->enqueue($tube, new SimpleMessage('TestMessage'));
@@ -126,7 +125,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->assertEquals('ready', $res['state']);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->conn = self::createConnection();
         $this->serializer = NativeSerializer::fromSigningKey('supersecret');

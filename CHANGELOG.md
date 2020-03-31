@@ -3,10 +3,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.NEXT (Unreleased)
+## 5.NEXT (Unreleased)
+
+**Important Note:** we're skipping v4.X because I'm tired of trying to figure
+out which version of my own queue library goes with which driver. If it's a 5.X
+version of any `pmg/queue` library it will work with `pmg/queue` 5.X.
 
 ### Changed
-n/a
+
+- PHP 7.3+ is now required.
+- `pmg/queue` 5.X is now required, and the drivers method signatures have
+    changed to reflect the `Driver` interface changes in `pmg/queue` 5.X
+- The `retry-delay` option was removed. The `pmg/queue` core now supports
+  retry delays and the driver now uses that system.
 
 ### Fixed
 n/a
