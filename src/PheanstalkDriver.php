@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * This file is part of pmg/queue-pheanstalk
  *
@@ -134,7 +134,8 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     public function retry(string $queueName, Envelope $env) : Envelope
     {
         $pheanstalkEnv = $this->assurePheanstalkEnvelope($env);
-        $data = $this->serialize($env);
+        $realEnvelope = $pheanstalkEnv->getWrappedEnvelope();
+        $data = $this->serialize($realEnvelope);
 
         // since we need to update the job payload here, we have to delete
         // it and re-add it manually. This isn't transational, so there's
@@ -146,12 +147,12 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
                 $pheanstalkEnv->delay(),
                 $this->options['retry-ttr']
             );
-            $this->conn->delete($env->getJob());
+            $this->conn->delete($pheanstalkEnv->getJob());
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
 
-        return new PheanstalkEnvelope($job, $env);
+        return new PheanstalkEnvelope($job, $realEnvelope);
     }
 
     /**
