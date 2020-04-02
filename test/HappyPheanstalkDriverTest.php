@@ -14,6 +14,7 @@ namespace PMG\Queue\Driver;
 
 use Pheanstalk\Exception\ServerException;
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
@@ -67,6 +68,26 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
 
         // just to make sure we put the job in
         $this->conn->statsJob($env3->getJob());
+    }
+
+    /**
+     * @group regression
+     */
+    public function testRetriedJobsDoNoPutSerializePheanstalkEnvelopes()
+    {
+        $tube = $this->randomTube();
+
+        $env = $this->driver->enqueue($tube, new SimpleMessage('TestMessage'));
+        $this->assertEnvelope($env);
+
+        $env2 = $this->driver->dequeue($tube);
+        $this->assertEnvelope($env2);
+
+        $this->assertEquals($env->getJobId(), $env2->getJobId());
+
+        $env3 = $this->driver->retry($tube, $env2);
+        $this->assertEnvelope($env3);
+        $this->assertInstanceOf(DefaultEnvelope::class, $env3->getWrappedEnvelope());
     }
 
     public function testJobsAreBuriedWithRetry()

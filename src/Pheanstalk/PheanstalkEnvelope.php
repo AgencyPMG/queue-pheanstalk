@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * This file is part of pmg/queue-pheanstalk
  *
@@ -84,5 +84,10 @@ final class PheanstalkEnvelope implements Envelope
     public function getJobId()
     {
         return $this->getJob()->getId();
+    }
+
+    public function getWrappedEnvelope() : Envelope
+    {
+        return $this->wrapped;
     }
 }
