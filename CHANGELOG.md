@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.NEXT (Unreleased)
+## 5.0.0
 
 **Important Note:** we're skipping v4.X because I'm tired of trying to figure
 out which version of my own queue library goes with which driver. If it's a 5.X
