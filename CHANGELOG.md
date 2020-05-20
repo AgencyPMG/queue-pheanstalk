@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.0
+
+## Added
+
+- `PMG\Queue\Driver\Pheanstalk\PheanstalkOptions` interface as added along with
+  an implementation backed by an array (`ArrayOptions`). This should allow
+  end-users to change message options (things like priority, etc) based on
+  incoming messages.
+
+## Deprecated
+
+- Passing an array of options to `PheanstalkDriver`'s constructor is deprecated,
+  use a `PheanstalkOptions` implementation instead (probably `ArrayOptions`)
+- Passing null or an integer to `BuryFailureStrategy` is deprecated, pass a
+  `PheanstalkOptions` implementation instead.
+
 ## 5.0.0
 
 **Important Note:** we're skipping v4.X because I'm tired of trying to figure
