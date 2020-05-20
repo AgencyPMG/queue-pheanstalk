@@ -24,13 +24,24 @@ final class BuryFailureStrategy implements FailureStrategy
     /**
      * The priority to assign to a buried job.
      *
-     * @var int
+     * @var PheanstalkOptions
      */
-    private $priority;
+    private $options;
 
-    public function __construct($priority=null)
+    public function __construct($priorityOrOptions=null)
     {
-        $this->priority = null === $priority ? PheanstalkInterface::DEFAULT_PRIORITY : intval($priority);
+        if ($priorityOrOptions instanceof PheanstalkOptions) {
+            $this->options = $priorityOrOptions;
+        } else {
+            @trigger_error(sprintf(
+                'Passing a priority or null to %s::__construct is deprecated since 5.1.0, pass a %s implementation instead',
+                self::CLASS,
+                PheanstalkOptions::class
+            ), E_USER_DEPRECATED);
+            $this->options = new ArrayOptions([
+                PheanstalkOptions::FAIL_PRIORITY => intval($priorityOrOptions ?? PheanstalkInterface::DEFAULT_PRIORITY),
+            ]);
+        }
     }
 
     /**
@@ -38,6 +49,9 @@ final class BuryFailureStrategy implements FailureStrategy
      */
     public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env)
     {
-        $conn->bury($env->getJob(), $this->priority);
+        $conn->bury($env->getJob(), $this->options->getMessageOption(
+            PheanstalkOptions::FAIL_PRIORITY,
+            $env->unwrap()
+        ));
     }
 }

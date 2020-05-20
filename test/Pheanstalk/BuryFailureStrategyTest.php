@@ -22,7 +22,9 @@ class BuryFailureStrategyTest extends PheanstalkTestCase
 {
     public function testFailBuriesTheGivenPheanstalkJob()
     {
-        $s = new BuryFailureStrategy(20);
+        $s = new BuryFailureStrategy(new ArrayOptions([
+            PheanstalkOptions::FAIL_PRIORITY => 20,
+        ]));
         $job = new Job(123, 'ignored');
         $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
         $conn = $this->createMock(PheanstalkInterface::class);
@@ -31,5 +33,37 @@ class BuryFailureStrategyTest extends PheanstalkTestCase
             ->with($job, 20);
 
         $s->fail($conn, $env);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testBuryStrategyCanStillBeCreatedWithIntegerArgument()
+    {
+        $strategy = new BuryFailureStrategy(20);
+        $job = new Job(123, 'ignored');
+        $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
+        $conn = $this->createMock(PheanstalkInterface::class);
+        $conn->expects($this->once())
+            ->method('bury')
+            ->with($job, 20);
+
+        $strategy->fail($conn, $env);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testBuryStrategyCanStillBeCreatedWithNullArgument()
+    {
+        $strategy = new BuryFailureStrategy(null);
+        $job = new Job(123, 'ignored');
+        $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
+        $conn = $this->createMock(PheanstalkInterface::class);
+        $conn->expects($this->once())
+            ->method('bury')
+            ->with($job, PheanstalkInterface::DEFAULT_PRIORITY);
+
+        $strategy->fail($conn, $env);
     }
 }

@@ -20,6 +20,7 @@ use PMG\Queue\Exception\InvalidEnvelope;
 use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
+use PMG\Queue\Driver\Pheanstalk\PheanstalkOptions;
 
 /**
  * Tests all the "unhappy" paths for the pheanstalk driver. This test
@@ -27,7 +28,7 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
  */
 class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
 {
-    private $conn, $driver;
+    private $conn, $serializer, $driver;
 
     public function testAckCannotBeCalledWithABadEnvelope()
     {
@@ -83,10 +84,23 @@ class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->driver->release('q', $this->env);
     }
 
+    /**
+     * @group legacy
+     */
+    public function testDriverCanStillBeCreatedWithAnArrayHasOptions()
+    {
+        $driver = new PheanstalkDriver($this->conn, $this->serializer, [
+            PheanstalkOptions::RESERVE_TIMEOUT => 1,
+        ]);
+
+        $this->assertInstanceOf(PheanstalkDriver::class, $driver, 'just to get get PHPUnit to not say this test is risky');
+    }
+
     protected function setUp() : void
     {
         $this->conn = Pheanstalk::create('localhost', 65000);
-        $this->driver = new PheanstalkDriver($this->conn, NativeSerializer::fromSigningKey('supersecret'));
+        $this->serializer = NativeSerializer::fromSigningKey('supersecret');
+        $this->driver = new PheanstalkDriver($this->conn, $this->serializer);
         $this->env = new PheanstalkEnvelope(
             new Job(123, 't'),
             new DefaultEnvelope(new SimpleMessage('t'))

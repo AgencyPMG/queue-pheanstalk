@@ -17,11 +17,14 @@ use Pheanstalk\Contract\PheanstalkInterface;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Envelope;
 use PMG\Queue\Message;
+use PMG\Queue\Exception\InvalidArgumentException;
 use PMG\Queue\Exception\InvalidEnvelope;
 use PMG\Queue\Serializer\Serializer;
+use PMG\Queue\Driver\Pheanstalk\ArrayOptions;
 use PMG\Queue\Driver\Pheanstalk\FailureStrategy;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
+use PMG\Queue\Driver\Pheanstalk\PheanstalkOptions;
 
 /**
  * A driver implementatio backed by Pheanstalk & Beanstalkd.
@@ -39,7 +42,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     private $conn;
 
     /**
-     * @var array
+     * @var PheanstalkOptions
      */
     private $options;
 
@@ -48,24 +51,12 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     private $failure;
 
-    public function __construct(PheanstalkInterface $conn, Serializer $serializer, array $options=null, FailureStrategy $failure=null)
+    public function __construct(PheanstalkInterface $conn, Serializer $serializer, $options=null, FailureStrategy $failure=null)
     {
         parent::__construct($serializer);
         $this->conn = $conn;
-        $this->options = array_replace([
-            'priority'          => PheanstalkInterface::DEFAULT_PRIORITY,
-            'delay'             => PheanstalkInterface::DEFAULT_DELAY,
-            'ttr'               => PheanstalkInterface::DEFAULT_TTR,
-            'retry-priority'    => PheanstalkInterface::DEFAULT_PRIORITY,
-            'retry-ttr'         => PheanstalkInterface::DEFAULT_TTR,
-            'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
-            'release-priority'  => PheanstalkInterface::DEFAULT_PRIORITY,
-            'release-delay'     => PheanstalkInterface::DEFAULT_DELAY,
-            'reserve-timeout'   => 10,
-        ], $options ?: []);
-        $this->failure = null === $failure ? new Pheanstalk\BuryFailureStrategy(
-            $this->options['fail-priority']
-        ) : $failure;
+        $this->options = self::createOptionsObject($options);
+        $this->failure = $failure ?? new Pheanstalk\BuryFailureStrategy($this->options);
     }
 
     /**
@@ -90,9 +81,9 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         try {
             $job = $this->conn->useTube($queueName)->put(
                 $data,
-                $this->options['priority'],
-                $this->options['delay'],
-                $this->options['ttr']
+                $this->options->getMessageOption(PheanstalkOptions::PRIORITY, $message),
+                $this->options->getMessageOption(PheanstalkOptions::DELAY, $message),
+                $this->options->getMessageOption(PheanstalkOptions::TTR, $message),
             );
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
@@ -108,7 +99,9 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     {
         $job = null;
         try {
-            $job = $this->conn->watchOnly($queueName)->reserveWithTimeout($this->options['reserve-timeout']);
+            $job = $this->conn->watchOnly($queueName)->reserveWithTimeout(
+                $this->options->getGlobalOption(PheanstalkOptions::RESERVE_TIMEOUT)
+            );
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
@@ -143,9 +136,9 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         try {
             $job = $this->conn->useTube($queueName)->put(
                 $data,
-                $this->options['retry-priority'],
+                $this->options->getMessageOption(PheanstalkOptions::RETRY_PRIORITY, $realEnvelope->unwrap()),
                 $pheanstalkEnv->delay(),
-                $this->options['retry-ttr']
+                $this->options->getMessageOption(PheanstalkOptions::RETRY_TTR, $realEnvelope->unwrap()),
             );
             $this->conn->delete($pheanstalkEnv->getJob());
         } catch (\Pheanstalk\Exception $e) {
@@ -177,9 +170,9 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         try {
             $this->conn->release(
                 $env->getJob(),
-                $this->options['release-priority'],
+                $this->options->getMessageOption(PheanstalkOptions::RELEASE_PRIORITY, $env->unwrap()),
                 $env->delay(),
-                $this->options['release-delay']
+                $this->options->getMessageOption(PheanstalkOptions::RELEASE_DELAY, $env->unwrap())
             );
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
@@ -198,5 +191,28 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         }
 
         return $env;
+    }
+
+    private static function createOptionsObject($options) : PheanstalkOptions
+    {
+        if ($options instanceof PheanstalkOptions) {
+            return $options;
+        }
+
+        if (null === $options) {
+            return new ArrayOptions([]);
+        }
+
+        if (is_array($options)) {
+            @trigger_error(sprintf(
+                'Passing an array of $options to %s::__construct is deprecated as of v5.1.0, please use %s instead',
+                self::CLASS,
+                ArrayOptions::class
+            ), E_USER_DEPRECATED);
+
+            return new ArrayOptions($options ?? []);
+        }
+
+        throw new InvalidArgumentException('$options must be null, an array, or an instance of '.PheanstalkOptions::class);
     }
 }
