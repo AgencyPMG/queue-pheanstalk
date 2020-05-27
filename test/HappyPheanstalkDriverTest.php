@@ -113,7 +113,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
     public function testFailWithADeleteFailureStrategyRemovesTheJob()
     {
         $driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
-            'reserve-timeout' => 1,
+            ArrayOptions::RESERVE_TIMEOUT => 1,
         ]), new Pheanstalk\DeleteFailureStrategy());
         $tube = $this->randomTube();
 
