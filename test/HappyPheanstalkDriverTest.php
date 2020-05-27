@@ -16,6 +16,7 @@ use Pheanstalk\Exception\ServerException;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Serializer\NativeSerializer;
+use PMG\Queue\Driver\Pheanstalk\ArrayOptions;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
 
@@ -111,9 +112,9 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
 
     public function testFailWithADeleteFailureStrategyRemovesTheJob()
     {
-        $driver = new PheanstalkDriver($this->conn, $this->serializer, [
-            'reserve-timeout' => 1,
-        ], new Pheanstalk\DeleteFailureStrategy());
+        $driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
+            ArrayOptions::RESERVE_TIMEOUT => 1,
+        ]), new Pheanstalk\DeleteFailureStrategy());
         $tube = $this->randomTube();
 
         $env = $driver->enqueue($tube, new SimpleMessage('TestMessage'));
@@ -150,9 +151,9 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
     {
         $this->conn = self::createConnection();
         $this->serializer = NativeSerializer::fromSigningKey('supersecret');
-        $this->driver = new PheanstalkDriver($this->conn, $this->serializer, [
-            'reserve-timeout'   => 1,
-        ]);
+        $this->driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
+            ArrayOptions::RESERVE_TIMEOUT => 1,
+        ]));
 
         try {
             $this->seenTubes = array_fill_keys($this->conn->listTubes(), true);
