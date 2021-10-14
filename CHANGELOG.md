@@ -3,16 +3,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.2.0
+
+### Added 
+
+- Add support for PHP 8.X
+
+### Changed
+
+- Dropped PHP 7.3 support
+
 ## 5.1.0
 
-## Added
+### Added
 
 - `PMG\Queue\Driver\Pheanstalk\PheanstalkOptions` interface as added along with
   an implementation backed by an array (`ArrayOptions`). This should allow
   end-users to change message options (things like priority, etc) based on
   incoming messages.
 
-## Deprecated
+### Deprecated
 
 - Passing an array of options to `PheanstalkDriver`'s constructor is deprecated,
   use a `PheanstalkOptions` implementation instead (probably `ArrayOptions`)
