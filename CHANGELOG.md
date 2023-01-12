@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.0.0
+
+### Changed
+
+- `PMG\Queue\Driver\PheanstalkDriver` no longer accepts arrays as its `$options`
+  argument, instead pass `PMG\Queue\Driver\Pheanstalk\ArrayOptions`.
+
 ## 5.2.0
 
 ### Added 
