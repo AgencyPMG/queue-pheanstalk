@@ -76,12 +76,12 @@ final class PheanstalkEnvelope implements Envelope
         Return $this->wrapped->delay();
     }
 
-    public function getJob()
+    public function getJob() : Job
     {
         return $this->job;
     }
 
-    public function getJobId()
+    public function getJobId() : int
     {
         return $this->getJob()->getId();
     }
