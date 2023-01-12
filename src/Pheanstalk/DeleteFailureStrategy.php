@@ -25,7 +25,7 @@ final class DeleteFailureStrategy implements FailureStrategy
     /**
      * {@inheritdoc}
      */
-    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env)
+    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env) : void
     {
         $conn->delete($env->getJob());
     }

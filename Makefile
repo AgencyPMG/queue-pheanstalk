@@ -9,5 +9,3 @@ test:
 examples:
 	php examples/pheanstalk.php
 	php examples/retrying.php
-
-travis: test examples

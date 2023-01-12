@@ -20,7 +20,7 @@ use PMG\Queue\Driver\PheanstalkTestCase;
 
 class DeleteFailureStrategyTest extends PheanstalkTestCase
 {
-    public function testFailDeletesTheGivenPheanstalkJob()
+    public function testFailDeletesTheGivenPheanstalkJob() : void
     {
         $s = new DeleteFailureStrategy();
         $job = new Job(123, 'ignored');

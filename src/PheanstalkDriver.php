@@ -36,26 +36,21 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkOptions;
  */
 final class PheanstalkDriver extends AbstractPersistanceDriver
 {
-    /**
-     * @var PheanstalkInterface
-     */
-    private $conn;
+    private PheanstalkInterface $conn;
 
-    /**
-     * @var PheanstalkOptions
-     */
-    private $options;
+    private PheanstalkOptions $options;
 
-    /**
-     * @var FailureStrategy
-     */
-    private $failure;
+    private FailureStrategy $failure;
 
-    public function __construct(PheanstalkInterface $conn, Serializer $serializer, $options=null, FailureStrategy $failure=null)
-    {
+    public function __construct(
+        PheanstalkInterface $conn,
+        Serializer $serializer,
+        ?PheanstalkOptions $options=null,
+        ?FailureStrategy $failure=null,
+    ) {
         parent::__construct($serializer);
         $this->conn = $conn;
-        $this->options = self::createOptionsObject($options);
+        $this->options = $options ?? new ArrayOptions([]);
         $this->failure = $failure ?? new Pheanstalk\BuryFailureStrategy($this->options);
     }
 
@@ -191,28 +186,5 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         }
 
         return $env;
-    }
-
-    private static function createOptionsObject($options) : PheanstalkOptions
-    {
-        if ($options instanceof PheanstalkOptions) {
-            return $options;
-        }
-
-        if (null === $options) {
-            return new ArrayOptions([]);
-        }
-
-        if (is_array($options)) {
-            @trigger_error(sprintf(
-                'Passing an array of $options to %s::__construct is deprecated as of v5.1.0, please use %s instead',
-                self::CLASS,
-                ArrayOptions::class
-            ), E_USER_DEPRECATED);
-
-            return new ArrayOptions($options ?? []);
-        }
-
-        throw new InvalidArgumentException('$options must be null, an array, or an instance of '.PheanstalkOptions::class);
     }
 }

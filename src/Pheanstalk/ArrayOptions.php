@@ -43,7 +43,7 @@ final class ArrayOptions implements PheanstalkOptions
     /**
      * {@inheritdoc}
      */
-    public function getMessageOption(string $optionName, object $message)
+    public function getMessageOption(string $optionName, object $message) : int|string|bool
     {
         return $this->get($optionName);
     }
@@ -51,12 +51,12 @@ final class ArrayOptions implements PheanstalkOptions
     /**
      * {@inheritdoc}
      */
-    public function getGlobalOption(string $optionName)
+    public function getGlobalOption(string $optionName) : int|string|bool
     {
         return $this->get($optionName);
     }
 
-    private function get(string $optionName)
+    private function get(string $optionName) : int|string|bool
     {
         if (!isset($this->options[$optionName])) {
             throw MissingOption::fromName($optionName);
