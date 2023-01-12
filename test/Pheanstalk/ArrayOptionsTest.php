@@ -18,28 +18,28 @@ class ArrayOptionsTest extends PheanstalkTestCase
 {
     private ArrayOptions $options;
 
-    public function testGetMessageOptionErrorsWhenGivenAnInvalidOptionName()
+    public function testGetMessageOptionErrorsWhenGivenAnInvalidOptionName() : void
     {
         $this->expectException(MissingOption::class);
 
         $this->options->getMessageOption(__METHOD__, new class() {});
     }
 
-    public function testGetMessageOptionReturnsOptionValueWhenOptionExists()
+    public function testGetMessageOptionReturnsOptionValueWhenOptionExists() : void
     {
         $option = $this->options->getMessageOption('test', new class() {});
 
         $this->assertSame(123, $option);
     }
 
-    public function testGetGlobalOptionErrorsWhenGivenAnInvalidOptionName()
+    public function testGetGlobalOptionErrorsWhenGivenAnInvalidOptionName() : void
     {
         $this->expectException(MissingOption::class);
 
         $this->options->getGlobalOption(__METHOD__);
     }
 
-    public function testGetGlobalOptionReturnsOptionValueWhenOptionExists()
+    public function testGetGlobalOptionReturnsOptionValueWhenOptionExists() : void
     {
         $option = $this->options->getGlobalOption('test');
 

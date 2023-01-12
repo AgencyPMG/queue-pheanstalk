@@ -37,12 +37,12 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
      */
     private array $seenTubes = [];
 
-    public function testDequeueReturnsNullWhenNoJobsAreFound()
+    public function testDequeueReturnsNullWhenNoJobsAreFound() : void
     {
         $this->assertNull($this->driver->dequeue($this->randomTube()));
     }
 
-    public function testJobsCanBeEnqueuedAndDequeuedAndRemovedWithAck()
+    public function testJobsCanBeEnqueuedAndDequeuedAndRemovedWithAck() : void
     {
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('NOT_FOUND');
@@ -63,7 +63,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->conn->statsJob($env2->getJob());
     }
 
-    public function testJobsCanBeEnqueuedDequeuedAndRetriedWithRetry()
+    public function testJobsCanBeEnqueuedDequeuedAndRetriedWithRetry() : void
     {
         $tube = $this->randomTube();
 
@@ -84,7 +84,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
     /**
      * @group regression
      */
-    public function testRetriedJobsDoNoPutSerializePheanstalkEnvelopes()
+    public function testRetriedJobsDoNoPutSerializePheanstalkEnvelopes() : void
     {
         $tube = $this->randomTube();
 
@@ -101,7 +101,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->assertInstanceOf(DefaultEnvelope::class, $env3->getWrappedEnvelope());
     }
 
-    public function testJobsAreBuriedWithRetry()
+    public function testJobsAreBuriedWithRetry() : void
     {
         $tube = $this->randomTube();
 
@@ -120,7 +120,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->assertEquals('buried', $res['state']);
     }
 
-    public function testFailWithADeleteFailureStrategyRemovesTheJob()
+    public function testFailWithADeleteFailureStrategyRemovesTheJob() : void
     {
         $driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
             ArrayOptions::RESERVE_TIMEOUT => 1,
@@ -142,7 +142,7 @@ class HappyPheanstalkDriverTest extends PheanstalkTestCase
         $this->conn->statsJob($env2->getJob());
     }
 
-    public function testJobsCanBeReleasedAfterBeingReserved()
+    public function testJobsCanBeReleasedAfterBeingReserved() : void
     {
         $tube = $this->randomTube();
 

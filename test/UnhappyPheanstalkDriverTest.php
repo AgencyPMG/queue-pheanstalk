@@ -34,70 +34,58 @@ class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
     private PheanstalkDriver $driver;
     private PheanstalkEnvelope $env;
 
-    public function testAckCannotBeCalledWithABadEnvelope()
+    public function testAckCannotBeCalledWithABadEnvelope() : void
     {
         $this->expectException(InvalidEnvelope::class);
         $this->driver->ack('q', new DefaultEnvelope(new SimpleMessage('t')));
     }
 
-    public function testRetryCannotBeCalledWithABadEnvelope()
+    public function testRetryCannotBeCalledWithABadEnvelope() : void
     {
         $this->expectException(InvalidEnvelope::class);
         $this->driver->retry('q', new DefaultEnvelope(new SimpleMessage('t')));
     }
 
-    public function testFailCannotBeCalledWithABadEnvelope()
+    public function testFailCannotBeCalledWithABadEnvelope() : void
     {
         $this->expectException(InvalidEnvelope::class);
         $this->driver->fail('q', new DefaultEnvelope(new SimpleMessage('t')));
     }
 
-    public function testEnqueueErorrsWhenTheUnderlyingConnectionErrors()
+    public function testEnqueueErorrsWhenTheUnderlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->enqueue('q', new SimpleMessage('test'));
     }
 
-    public function testDequeueErorrsWhenTheUnderlyingConnectionErrors()
+    public function testDequeueErorrsWhenTheUnderlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->dequeue('q', new SimpleMessage('test'));
     }
 
-    public function testAckErrorsWhenUnderlyingConnectionErrors()
+    public function testAckErrorsWhenUnderlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->ack('q', $this->env);
     }
 
-    public function testRetryErrorsWhenUnderlyingConnectionErrors()
+    public function testRetryErrorsWhenUnderlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->retry('q', $this->env);
     }
 
-    public function testFailErrorsWhenUnderlyingConnectionErrors()
+    public function testFailErrorsWhenUnderlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->fail('q', $this->env);
     }
 
-    public function testReleaseErrorsWhenTheUnerlyingConnectionErrors()
+    public function testReleaseErrorsWhenTheUnerlyingConnectionErrors() : void
     {
         $this->expectException(PheanstalkError::class);
         $this->driver->release('q', $this->env);
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testDriverCanStillBeCreatedWithAnArrayHasOptions()
-    {
-        $driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
-            PheanstalkOptions::RESERVE_TIMEOUT => 1,
-        ]));
-
-        $this->assertInstanceOf(PheanstalkDriver::class, $driver, 'just to get get PHPUnit to not say this test is risky');
     }
 
     protected function setUp() : void
