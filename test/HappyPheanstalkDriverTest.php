@@ -12,6 +12,7 @@
 
 namespace PMG\Queue\Driver;
 
+use Pheanstalk\Contract\PheanstalkInterface;
 use Pheanstalk\Exception\ServerException;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\DefaultEnvelope;
@@ -25,7 +26,16 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
  */
 class HappyPheanstalkDriverTest extends PheanstalkTestCase
 {
-    private $conn, $serializer, $driver, $seenTubes = [];
+    private PheanstalkInterface $conn;
+
+    private NativeSerializer $serializer;
+
+    private PheanstalkDriver $driver;
+
+    /**
+     * @var string[]
+     */
+    private array $seenTubes = [];
 
     public function testDequeueReturnsNullWhenNoJobsAreFound()
     {

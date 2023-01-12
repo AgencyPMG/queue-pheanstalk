@@ -18,6 +18,7 @@ use PMG\Queue\SimpleMessage;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Exception\InvalidEnvelope;
 use PMG\Queue\Serializer\NativeSerializer;
+use PMG\Queue\Driver\Pheanstalk\ArrayOptions;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkError;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkOptions;
@@ -28,7 +29,10 @@ use PMG\Queue\Driver\Pheanstalk\PheanstalkOptions;
  */
 class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
 {
-    private $conn, $serializer, $driver;
+    private Pheanstalk $conn;
+    private NativeSerializer $serializer;
+    private PheanstalkDriver $driver;
+    private PheanstalkEnvelope $env;
 
     public function testAckCannotBeCalledWithABadEnvelope()
     {
@@ -89,9 +93,9 @@ class UnhappyPheanstalkDriverTest extends PheanstalkTestCase
      */
     public function testDriverCanStillBeCreatedWithAnArrayHasOptions()
     {
-        $driver = new PheanstalkDriver($this->conn, $this->serializer, [
+        $driver = new PheanstalkDriver($this->conn, $this->serializer, new ArrayOptions([
             PheanstalkOptions::RESERVE_TIMEOUT => 1,
-        ]);
+        ]));
 
         $this->assertInstanceOf(PheanstalkDriver::class, $driver, 'just to get get PHPUnit to not say this test is risky');
     }

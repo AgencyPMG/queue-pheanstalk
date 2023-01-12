@@ -16,7 +16,7 @@ use PMG\Queue\Driver\PheanstalkTestCase;
 
 class ArrayOptionsTest extends PheanstalkTestCase
 {
-    private $options;
+    private ArrayOptions $options;
 
     public function testGetMessageOptionErrorsWhenGivenAnInvalidOptionName()
     {
