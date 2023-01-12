@@ -33,7 +33,7 @@ final class BuryFailureStrategy implements FailureStrategy
     /**
      * {@inheritdoc}
      */
-    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env)
+    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env) : void
     {
         $conn->bury($env->getJob(), $this->options->getMessageOption(
             PheanstalkOptions::FAIL_PRIORITY,

@@ -13,6 +13,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   argument to its constructor, pass an options instance instead.
 - `PMG\Queue\Driver\Pheanstalk\PheanstalkOptions` now has `int|string|bool`
   return types for its `get{Global,Message}Option` methods.
+- `PMG\Queue\Driver\Pheanstalk\FailureStrategy` now has `void` return type
+  on its `fail` method.
 
 ## 5.2.0
 

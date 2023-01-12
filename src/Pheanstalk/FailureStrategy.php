@@ -21,5 +21,5 @@ use Pheanstalk\Contract\PheanstalkInterface;
  */
 interface FailureStrategy
 {
-    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env);
+    public function fail(PheanstalkInterface $conn, PheanstalkEnvelope $env) : void;
 }
