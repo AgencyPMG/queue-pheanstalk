@@ -35,7 +35,7 @@ final class StreamLogger extends AbstractLogger
     /**
      * {@inheritdoc}
      */
-    public function log($level, $message, array $context=[])
+    public function log($level, $message, array $context=[]) : void
     {
         $replace = $this->makeReplacements($context);
         fwrite($this->stream, sprintf(
@@ -46,11 +46,15 @@ final class StreamLogger extends AbstractLogger
         ));
     }
 
-    private function makeReplacements(array $context)
+    /**
+     * @param array<string, mixed> $context
+     * @return array<string,string>
+     */
+    private function makeReplacements(array $context) : array
     {
         $rv = [];
         foreach ($context as $name => $replace) {
-            $rv[sprintf('{%s}', $name)] = $replace;
+            $rv[sprintf('{%s}', $name)] = is_scalar($replace) ? (string) $replace : get_debug_type($replace);
         }
 
         return $rv;

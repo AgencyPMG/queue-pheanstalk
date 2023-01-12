@@ -1,6 +1,7 @@
 <?php
 
 use PMG\Queue;
+use PMG\Queue\Driver\Pheanstalk\ArrayOptions;
 use Pheanstalk\Pheanstalk;
 use Pheanstalk\Contract\PheanstalkInterface;
 
@@ -21,9 +22,9 @@ if (PHP_VERSION_ID >= 70000) {
     ], Queue\Driver\PheanstalkDriver::allowedClasses());
 }
 $serializer = Queue\Serializer\NativeSerializer::fromSigningKey('SuperSecretKey', $allowedClasses);
-$driver = new Queue\Driver\PheanstalkDriver($conn, $serializer, [
+$driver = new Queue\Driver\PheanstalkDriver($conn, $serializer, new ArrayOptions([
     'retry-priority' => 0, // most urgent
-]);
+]));
 
 $router = new Queue\Router\MappingRouter([
     'TestMessage'   => $queueName,
