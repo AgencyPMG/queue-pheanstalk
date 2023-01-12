@@ -20,6 +20,11 @@
             "PMG\\Queue\\Driver\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "PMG\\Queue\\Driver\\": "test/"
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.0-dev",
