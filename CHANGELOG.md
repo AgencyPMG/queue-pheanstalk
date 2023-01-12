@@ -11,6 +11,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   argument, instead pass `PMG\Queue\Driver\Pheanstalk\ArrayOptions`.
 - `PMG\Queue\Driver\Pheanstalk\BuryFailureStrategy` no longer accepts an integer
   argument to its constructor, pass an options instance instead.
+- `PMG\Queue\Driver\Pheanstalk\PheanstalkOptions` now has `int|string|bool`
+  return types for its `get{Global,Message}Option` methods.
 
 ## 5.2.0
 

@@ -35,16 +35,14 @@ interface PheanstalkOptions
      * @param $message the message for which the option is being retrieved, may be
      *        null if retrieving an option for which there would not be a message
      * @throws MissingOption if the $optionName is not available
-     * @return mixed but probably an int
      */
-    public function getMessageOption(string $optionName, object $message);
+    public function getMessageOption(string $optionName, object $message) : int|string|bool;
 
     /**
      * Get a global $optionName
      *
      * @param $optionName the option to retrieve
      * @throws MissingOption if the $optionName is not available
-     * @return mixed but probably an int
      */
-    public function getGlobalOption(string $optionName);
+    public function getGlobalOption(string $optionName) : int|string|bool;
 }
