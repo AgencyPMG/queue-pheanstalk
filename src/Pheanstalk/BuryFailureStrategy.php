@@ -21,27 +21,13 @@ use Pheanstalk\Contract\PheanstalkInterface;
  */
 final class BuryFailureStrategy implements FailureStrategy
 {
-    /**
-     * The priority to assign to a buried job.
-     *
-     * @var PheanstalkOptions
-     */
-    private $options;
+    private PheanstalkOptions $options;
 
-    public function __construct($priorityOrOptions=null)
+    public function __construct(?PheanstalkOptions $options=null)
     {
-        if ($priorityOrOptions instanceof PheanstalkOptions) {
-            $this->options = $priorityOrOptions;
-        } else {
-            @trigger_error(sprintf(
-                'Passing a priority or null to %s::__construct is deprecated since 5.1.0, pass a %s implementation instead',
-                self::CLASS,
-                PheanstalkOptions::class
-            ), E_USER_DEPRECATED);
-            $this->options = new ArrayOptions([
-                PheanstalkOptions::FAIL_PRIORITY => intval($priorityOrOptions ?? PheanstalkInterface::DEFAULT_PRIORITY),
-            ]);
-        }
+        $this->options = $options ?? new ArrayOptions([
+            PheanstalkOptions::FAIL_PRIORITY => PheanstalkInterface::DEFAULT_PRIORITY,
+        ]);
     }
 
     /**

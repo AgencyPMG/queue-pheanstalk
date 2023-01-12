@@ -20,7 +20,7 @@ use PMG\Queue\Driver\PheanstalkTestCase;
 
 class BuryFailureStrategyTest extends PheanstalkTestCase
 {
-    public function testFailBuriesTheGivenPheanstalkJob()
+    public function testFailBuriesTheGivenPheanstalkJob() : void
     {
         $s = new BuryFailureStrategy(new ArrayOptions([
             PheanstalkOptions::FAIL_PRIORITY => 20,
@@ -35,28 +35,9 @@ class BuryFailureStrategyTest extends PheanstalkTestCase
         $s->fail($conn, $env);
     }
 
-    /**
-     * @group legacy
-     */
-    public function testBuryStrategyCanStillBeCreatedWithIntegerArgument()
+    public function testBuryStrategyCanBeCreatedWithNullArgument() : void
     {
-        $strategy = new BuryFailureStrategy(20);
-        $job = new Job(123, 'ignored');
-        $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
-        $conn = $this->createMock(PheanstalkInterface::class);
-        $conn->expects($this->once())
-            ->method('bury')
-            ->with($job, 20);
-
-        $strategy->fail($conn, $env);
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testBuryStrategyCanStillBeCreatedWithNullArgument()
-    {
-        $strategy = new BuryFailureStrategy(null);
+        $strategy = new BuryFailureStrategy();
         $job = new Job(123, 'ignored');
         $env = new PheanstalkEnvelope($job, new DefaultEnvelope(new SimpleMessage('ignored')));
         $conn = $this->createMock(PheanstalkInterface::class);
