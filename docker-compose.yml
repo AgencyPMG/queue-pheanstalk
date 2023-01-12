@@ -1,0 +1,5 @@
+services:
+  beanstalkd:
+    image: schickling/beanstalkd
+    ports:
+      - "11300:11300"
