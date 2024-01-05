@@ -6,7 +6,7 @@
         { "name": "Christopher Davis", "email": "chris@pmg.com" }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "pmg/queue": "^6.0",
         "pda/pheanstalk": "^4.0"
     },

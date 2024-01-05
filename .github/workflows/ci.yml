@@ -13,9 +13,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: 8.0
-          - php-version: 8.1
           - php-version: 8.2
+          - php-version: 8.3
 
     steps:
       - name: checkout
@@ -36,9 +35,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: 8.0
-          - php-version: 8.1
           - php-version: 8.2
+          - php-version: 8.3
 
     steps:
       - name: checkout
