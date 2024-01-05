@@ -2,6 +2,8 @@
 /coverage*
 composer.lock
 .phpunit.result.cache
+.idea
+
 # archives and other useless files
 *.swp
 *.dmg
