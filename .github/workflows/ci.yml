@@ -20,7 +20,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: start beanstalkd
-        run: docker-compose up -d
+        run: docker compose up -d
       - name: PHP
         uses: ./.github/actions/setup-php
         with:
