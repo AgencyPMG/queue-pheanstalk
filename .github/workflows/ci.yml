@@ -15,10 +15,11 @@ jobs:
         include:
           - php-version: 8.3
           - php-version: 8.4
+          - php-version: 8.5
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: start beanstalkd
         run: docker compose up -d
       - name: PHP
@@ -37,10 +38,11 @@ jobs:
         include:
           - php-version: 8.3
           - php-version: 8.4
+          - php-version: 8.5
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: start beanstalkd
         run: docker compose up -d
       - name: PHP
